@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+(function(){
+  function getSystemTheme(){
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  window.applyTheme = function(theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('flos-theme', theme);
+  };
+  window.toggleTheme = function(){
+    var current = document.documentElement.getAttribute('data-theme') || getSystemTheme();
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  };
+  var saved = localStorage.getItem('flos-theme');
+  applyTheme(saved || getSystemTheme());
+})();
+</script>
+<title>Family Learning OS · Dashboard</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --panel:#ffffff; --text:#1c2128; --muted:#5b6472;
+    --border:#e3e6ea; --accent:#2f6f4f; --accent-soft:#e7f2ec;
+    --chip:#eef1f5; --chip-text:#3a4250; --warn-bg:#fff6e5; --warn-text:#8a5a00;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14171c; --panel:#1b1f26; --text:#e7eaee; --muted:#9aa4b2;
+      --border:#2a2f38; --accent:#5fbf8f; --accent-soft:#1d2b25;
+      --chip:#242a33; --chip-text:#c7cedb; --warn-bg:#2b2410; --warn-text:#e6c66b;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14171c; --panel:#1b1f26; --text:#e7eaee; --muted:#9aa4b2;
+    --border:#2a2f38; --accent:#5fbf8f; --accent-soft:#1d2b25;
+    --chip:#242a33; --chip-text:#c7cedb; --warn-bg:#2b2410; --warn-text:#e6c66b;
+  }
+  :root[data-theme="light"]{
+    --bg:#f6f7f9; --panel:#ffffff; --text:#1c2128; --muted:#5b6472;
+    --border:#e3e6ea; --accent:#2f6f4f; --accent-soft:#e7f2ec;
+    --chip:#eef1f5; --chip-text:#3a4250; --warn-bg:#fff6e5; --warn-text:#8a5a00;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",
+      "Malgun Gothic",sans-serif;
+    line-height:1.65;
+  }
+  header{
+    padding:28px 24px 18px; border-bottom:1px solid var(--border);
+    background:var(--panel);
+  }
+  header h1{margin:0 0 4px; font-size:22px;}
+  header p{margin:0; color:var(--muted); font-size:14px;}
+  .header-row{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;}
+  .theme-toggle{
+    flex-shrink:0; border:1px solid var(--border); background:var(--chip); color:var(--chip-text);
+    border-radius:999px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer;
+    white-space:nowrap;
+  }
+  .theme-toggle:hover{border-color:var(--accent);}
+  .theme-label-light{display:none;}
+  :root[data-theme="dark"] .theme-label-dark{display:none;}
+  :root[data-theme="dark"] .theme-label-light{display:inline;}
+  nav{
+    display:flex; gap:6px; padding:12px 24px 0; background:var(--panel);
+    border-bottom:1px solid var(--border); flex-wrap:wrap;
+  }
+  nav button{
+    border:none; background:transparent; color:var(--muted);
+    font-size:14px; padding:10px 14px; cursor:pointer; border-radius:8px 8px 0 0;
+    font-weight:600;
+  }
+  nav button.active{color:var(--accent); background:var(--accent-soft);}
+  main{max-width:960px; margin:0 auto; padding:24px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:20px 22px; margin-bottom:16px;
+  }
+  h2{font-size:18px; margin:0 0 10px;}
+  h3{font-size:15px; margin:18px 0 8px;}
+  .muted{color:var(--muted); font-size:13.5px;}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:640px){.grid{grid-template-columns:1fr;}}
+  .topic-list{margin:0; padding-left:18px; color:var(--text); font-size:14px;}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
+  .chip{
+    display:inline-flex; align-items:center; gap:4px;
+    background:var(--chip); color:var(--chip-text); border-radius:999px;
+    padding:5px 12px; font-size:12.5px; text-decoration:none; border:1px solid var(--border);
+  }
+  .chip:hover{border-color:var(--accent);}
+  .file-link{font-size:12.5px; color:var(--accent); text-decoration:none;}
+  .file-link:hover{text-decoration:underline;}
+  .week-tabs{display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap;}
+  .week-tabs button{
+    border:1px solid var(--border); background:var(--chip); color:var(--chip-text);
+    border-radius:999px; padding:7px 14px; font-size:13px; cursor:pointer; font-weight:600;
+  }
+  .week-tabs button.active{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .doc{display:none;}
+  .doc.active{display:block;}
+  .week-block{display:none;}
+  .week-block.active{display:block;}
+  .doc h4{font-size:17px; margin-top:0;}
+  .doc p{font-size:14.5px;}
+  .wordbox{
+    background:var(--accent-soft); border-radius:10px; padding:12px 16px; margin:14px 0;
+  }
+  .wordbox dt{font-weight:700; font-size:13.5px;}
+  .wordbox dd{margin:0 0 8px; font-size:13.5px; color:var(--muted);}
+  .think{
+    border-left:3px solid var(--accent); padding:4px 14px; font-size:14px; margin:14px 0;
+    background:var(--accent-soft); border-radius:0 8px 8px 0;
+  }
+  .qlist{padding-left:20px; font-size:14px;}
+  .qlist li{margin-bottom:6px;}
+  table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border);}
+  th{color:var(--muted); font-weight:600;}
+  a.ext{color:var(--accent); text-decoration:none;}
+  a.ext:hover{text-decoration:underline;}
+  .note{
+    background:var(--warn-bg); color:var(--warn-text); font-size:12.5px;
+    border-radius:8px; padding:8px 12px; margin-top:8px;
+  }
+  .source-note{font-size:12px; color:var(--muted); margin-top:10px;}
+  .badge{
+    display:inline-block; background:var(--accent); color:#fff; font-size:11.5px;
+    border-radius:999px; padding:2px 9px; margin-left:8px; vertical-align:middle;
+  }
+  footer{text-align:center; color:var(--muted); font-size:12px; padding:30px 0 40px;}
+
+  .stat-row{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;}
+  @media (max-width:640px){.stat-row{grid-template-columns:1fr 1fr;}}
+  .stat-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px;
+    padding:16px 18px;
+  }
+  .stat-card .num{font-size:24px; font-weight:800; color:var(--accent);}
+  .stat-card .label{font-size:12.5px; color:var(--muted); margin-top:2px;}
+
+  .season-row{display:flex; align-items:center; gap:12px; padding:8px 0;}
+  .season-row .s-name{width:76px; font-size:13px; font-weight:600; flex-shrink:0;}
+  .season-row .s-bar{
+    flex:1; height:10px; background:var(--chip); border-radius:999px; overflow:hidden;
+  }
+  .season-row .s-fill{height:100%; background:var(--accent); border-radius:999px;}
+  .season-row .s-frac{width:52px; text-align:right; font-size:12px; color:var(--muted); flex-shrink:0;}
+
+  .status-pill{
+    display:inline-block; font-size:11.5px; padding:2px 9px; border-radius:999px; font-weight:700;
+  }
+  .status-done{background:var(--accent-soft); color:var(--accent);}
+  .status-pending{background:var(--chip); color:var(--muted);}
+
+  #reading-list-table tr, #week-progress-table tr{cursor:default;}
+  #reading-list-table tr.clickable{cursor:pointer;}
+  #reading-list-table tr.clickable:hover{background:var(--accent-soft);}
+
+  .pdf-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--accent); color:#fff; border:none; border-radius:8px;
+    padding:8px 14px; font-size:13px; font-weight:700; cursor:pointer; margin-bottom:14px;
+  }
+  .pdf-btn:hover{opacity:.88;}
+
+  #print-area{display:none;}
+  @media print{
+    @page{ size:A4 portrait; margin:15mm 20mm; }
+    body *{ visibility:hidden; }
+    #print-area, #print-area *{ visibility:visible; }
+    #print-area{
+      display:block; position:absolute; top:0; left:0; width:100%;
+      padding:0; margin:0; background:#fff; color:#111;
+      font-size:9.5px; line-height:1.4;
+    }
+  }
+  .print-header{ border-bottom:2px solid #2f6f4f; padding-bottom:6px; margin-bottom:8px; }
+  .print-brand{ font-size:15px; font-weight:800; color:#2f6f4f; letter-spacing:.02em; }
+  .print-sub{ font-size:9px; color:#555; margin-top:2px; }
+  .print-info{ display:flex; gap:16px; font-size:9px; margin-bottom:8px; color:#222; flex-wrap:wrap; }
+  .print-info b{ margin-right:3px; color:#2f6f4f; }
+  .print-body h4{ font-size:13px; margin:0 0 6px; color:#111; line-height:1.3; }
+  .print-body p{ font-size:9.5px; line-height:1.45; margin:5px 0; color:#111; }
+  .print-body .wordbox{ background:#f0f5f2; border-radius:6px; padding:6px 10px; margin:8px 0; }
+  .print-body .wordbox dl{ margin:0; display:grid; grid-template-columns:auto 1fr; column-gap:6px; row-gap:1px; }
+  .print-body .wordbox dt{ color:#111; font-size:9px; font-weight:700; }
+  .print-body .wordbox dd{ color:#444; margin:0; font-size:9px; }
+  .print-body .think{ border-left:2px solid #2f6f4f; padding:3px 10px; background:#f0f5f2; margin:8px 0; color:#222; font-size:9.5px;}
+  .print-body .note{ background:#fff6e5; color:#8a5a00; padding:4px 8px; border-radius:6px; font-size:8.5px; margin-top:6px; }
+  .print-body .qlist{ font-size:9.5px; color:#111; margin:5px 0; padding-left:14px; }
+  .print-body .qlist li{ margin-bottom:2px; }
+  .print-body h3{ font-size:10.5px; margin:8px 0 4px; color:#111; }
+
+  /* 성인용: 2페이지까지 자연스럽게 넘어가도 되므로 더 읽기 편한 크기로 */
+  #print-area.level-adult{ font-size:11px; line-height:1.6; }
+  #print-area.level-adult .print-brand{ font-size:17px; }
+  #print-area.level-adult .print-sub{ font-size:10px; }
+  #print-area.level-adult .print-info{ font-size:10px; margin-bottom:12px; }
+  #print-area.level-adult .print-body h4{ font-size:16px; margin:0 0 10px; }
+  #print-area.level-adult .print-body h3{ font-size:12px; margin:12px 0 6px; }
+  #print-area.level-adult .print-body p{ font-size:11px; line-height:1.65; margin:8px 0; }
+  #print-area.level-adult .print-body .wordbox{ padding:10px 14px; margin:12px 0; }
+  #print-area.level-adult .print-body .wordbox dt,
+  #print-area.level-adult .print-body .wordbox dd{ font-size:10.5px; }
+  #print-area.level-adult .print-body .think{ font-size:11px; padding:5px 12px; margin:12px 0; }
+  #print-area.level-adult .print-body .note{ font-size:9.5px; padding:6px 10px; }
+  #print-area.level-adult .print-body .qlist{ font-size:11px; margin:8px 0; padding-left:18px; }
+  #print-area.level-adult .print-body .qlist li{ margin-bottom:4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div>
+      <h1>Family Learning OS</h1>
+      <p>가족 AI 기반 평생학습 시스템 · 자료 대시보드</p>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <span class="theme-label-dark">🌙 다크 모드</span>
+      <span class="theme-label-light">☀️ 라이트 모드</span>
+    </button>
+  </div>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="dashboard">대시보드</button>
+  <button class="tab-btn" data-tab="overview">개요</button>
+  <button class="tab-btn" data-tab="curriculum">커리큘럼 &amp; 소스</button>
+  <button class="tab-btn" data-tab="weekly">주간 아카이브</button>
+  <button class="tab-btn" data-tab="sources">전체 원문 링크</button>
+</nav>
+
+<main>
+
+  <!-- DASHBOARD -->
+  <section class="panel active" id="dashboard">
+    <div class="stat-row" id="stat-row"></div>
+
+    <div class="card">
+      <h2>시즌 진행률</h2>
+      <div id="season-progress"></div>
+    </div>
+
+    <div class="card">
+      <h2>주차별 진행 상황</h2>
+      <table id="week-progress-table"></table>
+    </div>
+
+    <div class="card">
+      <h2>읽기 목록 <span class="muted" style="font-weight:400;font-size:12.5px">· 클릭하면 해당 지문으로 이동</span></h2>
+      <table id="reading-list-table"></table>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section class="panel" id="overview">
+    <div class="card">
+      <h2>비전</h2>
+      <p>시험 점수가 아니라 <b>문해력(Literacy)</b>을 기르는 것이 목표. 정보를 이해하고, 핵심을 요약하며,
+      비판적으로 사고하고, 자신의 언어로 설명하고, 새로운 지식을 기존 지식과 연결하는 능력을 키운다.
+      AI는 교사가 아니라 가족의 학습 파트너.</p>
+      <a class="file-link" href="README.md">→ README.md 전체 보기</a>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <h3>1단계 (6개월)</h3>
+        <p class="muted">문해력 습관 형성 — 비문학 읽기, 요약, 질문 만들기, 가족 토론</p>
+      </div>
+      <div class="card">
+        <h3>2단계 (1~2년)</h3>
+        <p class="muted">사고력 확장 — 원인/결과, 비교, 주장·근거, 다양한 관점</p>
+      </div>
+      <div class="card">
+        <h3>3단계 (3년 이상)</h3>
+        <p class="muted">평생학습 역량 — 자기주도 학습, AI 탐구, 지식 연결, 설명·글쓰기</p>
+      </div>
+      <div class="card">
+        <h3>운영 철학</h3>
+        <p class="muted">읽기 &lt; 이해 &lt; 연결 &lt; 설명 &lt; 질문 순으로 중요도가 커진다</p>
+      </div>
+    </div>
+    <div class="card">
+      <a class="file-link" href="GUIDE.md">→ GUIDE.md (운영 가이드)</a>&nbsp;&nbsp;
+      <a class="file-link" href="ROADMAP.md">→ ROADMAP.md (5년 로드맵)</a>&nbsp;&nbsp;
+      <a class="file-link" href="KNOWLEDGE_GRAPH/knowledge-map.md">→ Knowledge Graph</a>
+    </div>
+  </section>
+
+  <!-- CURRICULUM -->
+  <section class="panel" id="curriculum">
+    <p class="muted" style="margin-top:0">8개 시즌 · 52주. 지문은 원문을 그대로 쓰지 않고, 아래 소스를 참고해 재구성한 뒤 초4·중3·성인 수준으로 새로 생성한다.</p>
+
+    <div class="grid" id="curriculum-grid"></div>
+  </section>
+
+  <!-- WEEKLY -->
+  <section class="panel" id="weekly">
+    <div class="week-tabs" id="week-select">
+      <button class="week-select-btn active" data-week="wk1">Week 01</button>
+      <button class="week-select-btn" data-week="wk2">Week 02</button>
+    </div>
+
+    <div class="week-block active" id="wk1">
+    <div class="card">
+      <h2>Week 01 <span class="badge">과학 시즌</span></h2>
+      <p><b>주제:</b> 폭염과 기후 변화 (열섬 현상)</p>
+      <p class="muted">선정 이유: 오늘(2026-07-18) 기준 한여름이라 가족이 매일 체감하는 주제이며,
+      "생활과 연결"하기 쉬운 첫 주제로 적합.</p>
+    </div>
+
+    <div class="card">
+      <div class="week-tabs">
+        <button class="doc-btn active" data-doc="d-elem">초4</button>
+        <button class="doc-btn" data-doc="d-mid">중3</button>
+        <button class="doc-btn" data-doc="d-parent">성인</button>
+        <button class="doc-btn" data-doc="d-disc">가족 토론</button>
+      </div>
+
+      <div class="doc active" id="d-elem">
+        <button class="pdf-btn" onclick="exportPdf('d-elem')">🖨️ PDF로 저장 (유아미)</button>
+        <h4>여름이 점점 더워지는 이유는 무엇일까?</h4>
+        <p>올여름에도 낮 기온이 35도를 넘는 날이 계속되고 있어요. 아마 여러분도 "왜 이렇게 더운
+        거야?"라고 생각해본 적이 있을 거예요. 실제로 요즘 여름은 예전보다 훨씬 더 더워지고 있어요.</p>
+        <p>왜 이런 일이 생길까요? 지구는 두꺼운 공기층으로 둘러싸여 있어요. 이 공기 안에는 태양의
+        열을 붙잡아 두는 '온실가스'라는 것이 있어요. 온실가스는 마치 이불처럼 지구를 감싸서 열이
+        빠져나가지 못하게 해요. 우리가 자동차를 타거나, 공장에서 물건을 만들거나, 전기를 많이
+        쓸수록 온실가스가 더 많이 나와요. 온실가스가 늘어나면 지구 전체가 조금씩 더 뜨거워지는데,
+        이것을 '기후 변화'라고 불러요.</p>
+        <p>특히 도시는 시골보다 더 더워요. 시골에는 나무와 풀이 많아서 햇빛의 열을 식혀주지만,
+        도시에는 아스팔트 도로와 콘크리트 건물이 많아서 태양열을 오래 붙잡고 있어요. 그래서 도시에
+        사는 사람들은 에어컨을 더 많이 켜게 되고, 전기를 더 많이 쓰게 돼요. 그러면 온실가스가 또
+        늘어나서 지구가 더 더워지는 반복이 생겨요. 이런 반복을 '악순환'이라고 해요.</p>
+        <p>그럼 우리는 어떻게 해야 할까요? 첫째, 물을 자주 마셔야 해요. 목이 마르지 않아도 조금씩
+        자주 마시는 것이 좋아요. 둘째, 낮 12시부터 오후 4시 사이에는 밖에서 오래 놀지 않는 것이
+        안전해요. 이 시간이 하루 중 가장 더운 때이기 때문이에요. 셋째, 모자를 쓰거나 그늘에서 노는
+        것도 도움이 돼요. 마지막으로, 할머니·할아버지처럼 더위에 더 약한 어른들이 잘 계신지 살펴보는
+        것도 우리 가족이 할 수 있는 일이에요.</p>
+        <div class="wordbox">
+          <dl>
+            <dt>온실가스</dt><dd>태양열을 지구 안에 가둬 놓는 보이지 않는 기체</dd>
+            <dt>기후 변화</dt><dd>지구의 날씨가 예전과 다르게 점점 변하는 것</dd>
+            <dt>아스팔트</dt><dd>도로를 만들 때 쓰는 검은색 재료로, 열을 잘 흡수함</dd>
+            <dt>열섬</dt><dd>도시가 주변보다 더 뜨거워지는 것을 부르는 말</dd>
+            <dt>악순환</dt><dd>나쁜 결과가 다시 나쁜 원인이 되어 반복되는 것</dd>
+          </dl>
+        </div>
+        <div class="think">💭 생각해보기: 내가 집에서 전기를 아낄 수 있는 방법은 무엇이 있을까?</div>
+        <a class="file-link" href="WEEKLY/Week01/01_Elementary.md">→ 원본 md 보기</a>
+      </div>
+
+      <div class="doc" id="d-mid">
+        <button class="pdf-btn" onclick="exportPdf('d-mid')">🖨️ PDF로 저장 (유아인)</button>
+        <h4>폭염은 왜 점점 심해질까? — 열섬 현상과 기후 변화</h4>
+        <p>최근 몇 년간 한여름 폭염일수(하루 최고 기온이 33도 이상인 날)가 계속 늘고 있다는 조사가
+        여러 기관에서 나오고 있다. 뉴스에서도 "역대급 폭염", "그늘막 설치" 같은 표현을 자주 볼 수
+        있는데, 이런 현상의 원인은 크게 두 가지로 나눠 볼 수 있다.</p>
+        <p>첫째는 온실가스 증가에 따른 지구 온난화다. 화석연료 사용이 늘면서 대기 중 온실가스 농도가
+        높아졌고, 이는 지구 평균 기온을 서서히 끌어올린다. 기온이 1~2도만 올라가도 폭염이 발생할
+        확률은 크게 증가한다는 것이 여러 기후 연구의 공통된 결론이다. 지구 온난화는 특정 지역만의
+        문제가 아니라 전 세계에 걸쳐 나타나는 장기적인 변화이기 때문에, 한 해의 날씨만 보고
+        판단하기보다 여러 해의 흐름을 함께 살펴봐야 한다.</p>
+        <p>둘째는 도시화로 인한 '열섬 현상'이다. 도시에는 아스팔트, 콘크리트, 건물이 많아 낮 동안
+        흡수한 열을 밤에도 잘 내보내지 못한다. 그 결과 같은 날이라도 도심은 주변 농촌 지역보다
+        기온이 2~5도 더 높게 나타나는 경우가 많다. 도시에서는 밤에도 기온이 크게 떨어지지 않는
+        '열대야'가 자주 발생하는데, 이는 낮 동안 데워진 건물과 도로가 밤에도 열을 계속 내보내기
+        때문이다. 즉 지구 온난화라는 '큰 원인'과 도시 구조라는 '지역적 원인'이 겹쳐 폭염을 더
+        심하게 만드는 것이다.</p>
+        <p>이런 문제를 줄이기 위해 여러 도시에서는 도로에 물을 뿌리는 살수차를 운영하거나, 건물
+        옥상을 밝은 색으로 칠해 열을 덜 흡수하게 하는 '쿨루프' 사업을 진행하기도 한다. 나무와
+        녹지를 늘리는 것도 열섬 현상을 줄이는 대표적인 방법으로 꼽힌다.</p>
+        <p>폭염 대응 체계도 알아두면 유용하다. 기상청은 폭염의 심각도에 따라 '폭염주의보'와
+        '폭염경보'를 구분해 발표한다. 폭염주의보는 일정 기준 이상 더운 날이 예상될 때, 폭염경보는
+        그보다 더 심각한 더위가 예상될 때 내려지는 예보로, 각각 다른 수준의 주의가 필요하다는
+        신호로 볼 수 있다. 이런 예보 체계를 알아두면 가족이 야외 활동 계획을 세울 때 실질적인
+        도움이 된다.</p>
+        <p>폭염 대응을 두고는 서로 다른 의견도 있다. 한쪽에서는 에어컨 사용을 늘려 당장의 건강
+        피해를 줄여야 한다고 말한다. 다른 쪽에서는 에어컨 사용이 늘수록 전력 소비와 온실가스
+        배출이 늘어나 장기적으로 폭염을 더 심하게 만드는 악순환이라고 우려한다. 두 입장 모두
+        나름의 근거가 있어, 개인의 냉방과 사회 전체의 에너지 정책을 함께 고려해야 하는 문제다.</p>
+        <div class="wordbox">
+          <dl>
+            <dt>폭염일수</dt><dd>하루 최고 기온이 특정 기준(예: 33도) 이상인 날의 수</dd>
+            <dt>온실가스</dt><dd>대기 중에서 열을 가두어 지구 기온을 높이는 기체(이산화탄소 등)</dd>
+            <dt>지구 온난화</dt><dd>인간 활동 등으로 지구 평균 기온이 장기적으로 올라가는 현상</dd>
+            <dt>열섬 현상</dt><dd>도시 지역이 주변 지역보다 기온이 높게 나타나는 현상</dd>
+            <dt>열대야</dt><dd>밤 최저 기온이 25도 이상으로 떨어지지 않는 더운 밤</dd>
+            <dt>쿨루프</dt><dd>건물 옥상을 밝은 색으로 칠해 열 흡수를 줄이는 방법</dd>
+            <dt>악순환</dt><dd>나쁜 결과가 다시 나쁜 원인이 되어 반복되는 현상</dd>
+          </dl>
+        </div>
+        <ol class="qlist">
+          <li>폭염이 심해지는 것이 '지구 온난화' 때문이라는 주장의 근거로 이 글에서 제시된 것은 무엇인가?</li>
+          <li>에어컨 사용을 늘리는 것과 줄이는 것, 나는 어느 쪽 입장에 더 공감하는가? 그 이유는?</li>
+        </ol>
+        <a class="file-link" href="WEEKLY/Week01/02_Middle.md">→ 원본 md 보기</a>
+      </div>
+
+      <div class="doc" id="d-parent">
+        <button class="pdf-btn" onclick="exportPdf('d-parent')">🖨️ PDF로 저장 (선옥·지수)</button>
+        <h4>폭염, 개인의 적응과 사회의 대응 사이에서</h4>
+        <p>여름철 폭염이 예년보다 잦고 강해지고 있다는 인식은 이제 낯설지 않다. 기상 관측 기관들은
+        폭염일수, 열대야일수 등의 지표로 이런 변화를 수치화해 추적하고 있으며, 다수의 기후 연구는
+        온실가스 누적에 따른 지구 평균 기온 상승이 폭염의 빈도와 강도를 높이는 주요 배경이라고
+        설명한다. 다만 특정 해의 폭염을 '기후 변화 때문'이라고 단정하기보다, 자연적인 기후
+        변동성과 인위적인 온난화 경향이 함께 작용한 결과로 보는 것이 더 정확한 설명이다. 즉
+        올여름이 유난히 더웠다고 해서 그 자체를 기후 변화의 직접적 증거로 단정하기보다는, 장기간에
+        걸친 평균적인 상승 추세 속에서 이해하는 것이 과학적으로 더 타당하다.</p>
+        <p>도시에 사는 사람이라면 '열섬 현상'도 함께 고려할 필요가 있다. 아스팔트와 콘크리트, 건물
+        밀집도, 녹지 부족 등은 도심의 밤 기온을 농촌 지역보다 높게 유지시킨다. 이는 같은 폭염이라도
+        거주 지역에 따라 체감되는 더위와 건강 위험이 다르게 나타나는 이유이기도 하다. 실제로
+        폭염으로 인한 건강 피해는 노인, 어린이, 만성질환자, 실외 근로자 등 취약계층에서 더 크게
+        나타나는 경향이 여러 공공보건 자료에서 확인된다. 특히 홀로 거주하는 고령층은 냉방기기가
+        있어도 전기요금 부담이나 건강 상태 때문에 충분히 사용하지 못하는 경우가 있어, 단순히
+        "에어컨이 있으니 괜찮다"고 판단하기 어려운 지점도 있다.</p>
+        <p>이런 문제를 완화하기 위한 사회적 대응도 다양하게 논의되고 있다. 도시 녹지와 그늘 시설을
+        늘리는 것, 건물 옥상에 밝은 색을 칠해 열 흡수를 줄이는 '쿨루프' 사업, 무더위 쉼터 운영,
+        취약계층 방문 점검 등이 대표적이다. 이런 대책들은 개별 가정의 냉방만으로는 해결되지 않는
+        부분—특히 경제적 여건이나 건강 상태 때문에 스스로 대응하기 어려운 사람들—을 보완하는
+        역할을 한다.</p>
+        <p>폭염 대응을 둘러싼 사회적 논쟁도 살펴볼 만하다. 개인 차원에서는 에어컨 등 냉방기기
+        사용이 가장 직접적인 대응 수단이지만, 냉방 수요 증가는 전력 소비와 온실가스 배출을 늘려
+        장기적으로 폭염을 심화시키는 요인이 될 수 있다는 지적도 있다. 이런 구조 때문에 폭염 대응은
+        '개인의 적응(냉방, 물 섭취, 활동 시간 조절)'과 '사회적 대응(도시 녹지 확충, 에너지 정책,
+        취약계층 지원)'을 함께 고민해야 하는 문제로 다뤄진다. 어느 한쪽만으로는 근본적인 해결이
+        어렵다는 점에서, 이 주제는 '개인 vs 사회' 이분법보다 '어떻게 함께 대응할 것인가'라는
+        질문으로 이어지는 것이 자연스럽다.</p>
+        <p>가정에서 이 주제를 다룰 때는 아이가 겪는 실제 경험(더운 날 밖에서 놀기 힘들었던 경험
+        등)에서 출발해 원인(왜 더 더워졌을까)과 대응(우리 가족은 무엇을 할 수 있을까)으로
+        자연스럽게 확장하는 방식이 효과적이다. 나아가 우리 가족만이 아니라 이웃, 특히 더위에 더
+        취약한 어른들까지 함께 생각해보는 방향으로 대화를 넓혀가면, 개인의 문제를 사회적 시선으로
+        확장해보는 연습도 함께 할 수 있다.</p>
+        <h3>자녀와의 대화를 위한 질문 힌트</h3>
+        <ol class="qlist">
+          <li>"왜 그렇게 생각했어?"라고 물어 아이가 스스로 원인을 추론해보게 한 뒤, 부모가 알고 있는
+          배경(온실가스, 열섬 현상)을 덧붙여 설명해 주면 좋다.</li>
+          <li>정답을 바로 알려주기보다 "에어컨을 많이 켜는 게 좋을까, 아낄수록 좋을까? 둘 다 나름의
+          이유가 있어. 너는 어떻게 생각해?"처럼 양면을 함께 던져 아이가 균형 잡힌 시각을 연습하게
+          한다.</li>
+          <li>"우리 가족은 에어컨을 켜서 괜찮은데, 그렇지 못한 사람들도 있을까?"라는 질문으로
+          취약계층 이야기를 자연스럽게 꺼내볼 수 있다.</li>
+        </ol>
+        <p class="note">구체적인 통계(폭염일수 기록, 특정 연도 수치 등)가 필요하면 기상청·NASA
+        원자료로 별도 확인을 권장합니다.</p>
+        <a class="file-link" href="WEEKLY/Week01/03_Parents.md">→ 원본 md 보기</a>
+      </div>
+
+      <div class="doc" id="d-disc">
+        <h4>가족 토론 — 폭염과 기후 변화</h4>
+        <ol class="qlist">
+          <li><b>(원인)</b> 요즘 여름이 예전보다 더 더워진 이유는 무엇일까?</li>
+          <li><b>(근거)</b> 왜 도시가 시골보다 더 덥다고 할까? 그 이유(근거)는 무엇일까?</li>
+          <li><b>(다른 관점)</b> 에어컨을 더 많이 쓰는 것과 아껴 쓰는 것, 각각 어떤 장점과 단점이 있을까?</li>
+          <li><b>(생활 연결)</b> 우리 가족이 더위를 견디면서도 전기를 아낄 수 있는 방법에는 무엇이 있을까?</li>
+          <li><b>(찬반 토론)</b> "폭염이 심한 날에는 학교나 회사가 야외 활동을 반드시 금지해야 한다" — 찬성 vs 반대?</li>
+        </ol>
+        <h3>부모가 참고할 좋은 후속 질문</h3>
+        <ul class="qlist">
+          <li>"그렇게 생각하는 이유는 뭐야?"</li>
+          <li>"만약 다른 계절이었다면 어떻게 달라졌을까?"</li>
+        </ul>
+        <a class="file-link" href="WEEKLY/Week01/04_Family_Discussion.md">→ 원본 md 보기</a>
+      </div>
+    </div>
+    </div><!-- /wk1 -->
+
+    <div class="week-block" id="wk2">
+    <div class="card">
+      <h2>Week 02 <span class="badge">과학 시즌</span></h2>
+      <p><b>주제:</b> 땀은 왜 날까? — 몸의 체온 조절 원리 (인체)</p>
+      <p class="muted">선정 이유: Week 01(폭염·열섬)과 이어지는 주제. "더워진 환경"에서
+      "우리 몸이 어떻게 반응하는가"로 관점을 옮겨, 아직 다루지 않은 '인체' 주제를
+      지난주 내용과 자연스럽게 연결.</p>
+    </div>
+
+    <div class="card">
+      <div class="week-tabs">
+        <button class="doc-btn active" data-doc="d2-elem">초4</button>
+        <button class="doc-btn" data-doc="d2-mid">중3</button>
+        <button class="doc-btn" data-doc="d2-parent">성인</button>
+        <button class="doc-btn" data-doc="d2-disc">가족 토론</button>
+      </div>
+
+      <div class="doc active" id="d2-elem">
+        <button class="pdf-btn" onclick="exportPdf('d2-elem')">🖨️ PDF로 저장 (유아미)</button>
+        <h4>땀은 왜 날까?</h4>
+        <p>더운 날 밖에서 뛰어놀면 이마와 목, 등에 땀이 송송 나요. 운동을 하지 않아도 가만히
+        있는데 땀이 날 때도 있죠. 왜 이렇게 땀이 나는 걸까요?</p>
+        <p>우리 몸은 항상 36.5도 정도의 온도를 유지하려고 해요. 몸이 너무 뜨거워지면 몸속 여러
+        기관이 제대로 일하지 못해서 큰일이 나기 때문이에요. 그래서 몸은 열을 식히기 위해 피부에
+        땀을 만들어요. 땀은 물처럼 보이지만 몸속의 열도 함께 데리고 나와요. 땀이 마르면서 그
+        열을 공기 중으로 날려 보내기 때문에 몸이 시원해지는 거예요. 마치 물을 뿌린 젖은 손이
+        마를 때 시원하게 느껴지는 것과 비슷한 원리예요.</p>
+        <p>지난주에 배운 것처럼 요즘은 날씨가 점점 더워지고 있어요. 날씨가 더울수록 우리 몸은 더
+        많은 땀을 흘려서 체온을 낮추려고 애써요. 그런데 땀을 많이 흘리면 몸속의 물이 그만큼
+        줄어들어요. 그래서 목이 마르지 않아도 자주 물을 마셔야 해요. 물을 충분히 마시지 않으면
+        머리가 아프거나 기운이 없어지고, 심하면 어지러움을 느낄 수도 있어요.</p>
+        <p>우리 몸에는 땀을 만드는 땀샘이 수백만 개나 있어요. 특히 이마, 등, 손바닥, 발바닥에
+        땀샘이 많이 모여 있어서 더울 때 이 부분이 유독 축축해지는 것을 느낄 수 있어요.</p>
+        <p>그렇다면 어떻게 하면 좋을까요? 목이 마르기 전에 미리 물을 조금씩 자주 마시는 것이
+        가장 좋아요. 땀을 많이 흘렸다면 그늘이나 시원한 곳에서 잠깐 쉬어주는 것도 도움이 돼요.
+        밖에서 운동을 하고 왔다면 땀에 젖은 옷을 마른 옷으로 갈아입는 것도 좋은 방법이에요.</p>
+        <div class="wordbox">
+          <dl>
+            <dt>체온</dt><dd>몸의 온도</dd>
+            <dt>땀</dt><dd>몸의 열을 내보내기 위해 피부에서 나오는 물</dd>
+            <dt>탈수</dt><dd>몸속의 물이 너무 많이 빠져나가서 부족해지는 것</dd>
+            <dt>증발</dt><dd>물이 공기 중으로 사라지듯 날아가는 것</dd>
+          </dl>
+        </div>
+        <div class="think">💭 생각해보기: 더운 날 땀을 많이 흘렸을 때 우리 가족은 어떻게 물을 챙겨 마시고 있을까?</div>
+        <a class="file-link" href="WEEKLY/Week02/01_Elementary.md">→ 원본 md 보기</a>
+      </div>
+
+      <div class="doc" id="d2-mid">
+        <button class="pdf-btn" onclick="exportPdf('d2-mid')">🖨️ PDF로 저장 (유아인)</button>
+        <h4>체온 조절의 원리 — 땀과 폭염은 어떻게 연결될까</h4>
+        <p>지난주 우리는 폭염과 열섬 현상의 원인을 살펴봤다. 이번 주는 관점을 바꿔, 더워진
+        날씨 속에서 우리 몸이 어떻게 반응하는지를 살펴본다.</p>
+        <p>사람의 몸은 뇌의 시상하부라는 부위가 체온을 감지해 약 36.5도 안팎을 유지하도록
+        조절한다. 이렇게 몸의 상태를 일정하게 유지하려는 성질을 '항상성'이라고 부른다. 기온이
+        오르면 몸은 두 가지 방식으로 반응한다. 첫째, 피부 아래 혈관이 넓어져 혈액을 통해 몸속의
+        열을 피부 쪽으로 옮기고, 둘째, 땀샘에서 땀을 분비해 땀이 증발할 때 열을 함께
+        빼앗아간다. 이 두 과정이 함께 작동해야 체온이 안정적으로 유지된다. 운동선수들이 경기
+        중 땀을 많이 흘리는 것도 몸이 계속 움직이며 만들어내는 열을 식히기 위한 같은 원리다.</p>
+        <p>문제는 지난주에 배운 열섬 현상처럼 기온과 습도가 모두 높은 환경에서는 땀이 잘
+        마르지 않아 증발을 통한 냉각 효과가 떨어진다는 점이다. 땀이 피부에 그대로 맺혀 있기만
+        하고 증발하지 못하면 열을 제대로 내보내지 못한다. 이런 상태가 계속되면 몸은 체온을
+        낮추지 못해 '열사병'이나 '일사병' 같은 증상으로 이어질 수 있다. 일사병은 땀을 많이
+        흘려 탈수와 무기력감이 나타나는 상태이고, 열사병은 체온 조절 자체가 무너져 체온이
+        40도 이상으로 치솟는 훨씬 위험한 상태다. 즉 같은 '더위 때문'이라도 증상의 원인과
+        심각성은 다르게 구분해야 한다.</p>
+        <p>체온 조절 능력은 모든 사람에게 똑같이 작동하지는 않는다. 어린이는 아직 체온 조절
+        기능이 완전히 발달하지 않았고, 활동량이 많아 열을 더 많이 만들어낸다. 노인은 반대로
+        땀샘 기능이 약해지고 갈증을 느끼는 감각도 둔해지는 경향이 있어, 자신도 모르는 사이에
+        체온이 위험하게 올라갈 수 있다. 이런 차이 때문에 폭염 시기에는 특정 연령대를 더 주의
+        깊게 살펴봐야 한다는 이야기가 나온다.</p>
+        <p>이런 위험을 줄이기 위한 활동 지침도 함께 알아두면 좋다. 무더운 시간대에 야외 활동을
+        해야 한다면 30분에 한 번씩 그늘에서 쉬는 것이 권장되고, 강도가 높은 운동은 비교적 덜
+        더운 아침이나 저녁 시간으로 옮기는 것이 도움이 된다. 지난주에 배운 폭염특보 체계
+        (폭염주의보·폭염경보)를 확인해 그날의 야외 활동 강도를 조절하는 것도 실질적인 대응
+        방법이다.</p>
+        <p>수분 섭취가 중요한 이유도 여기에 있다. 땀으로 물과 함께 나트륨 등 전해질도
+        빠져나가기 때문에, 물만 마시는 것보다 적절한 전해질 섭취를 함께 고려해야 한다는
+        것이 여러 보건 자료의 공통된 설명이다. 특히 장시간 야외 활동을 하거나 땀을 많이 흘리는
+        운동을 할 때는 물과 전해질을 함께 보충하는 것이 도움이 된다.</p>
+        <div class="wordbox">
+          <dl>
+            <dt>시상하부</dt><dd>뇌에서 체온, 배고픔 등 몸의 균형을 조절하는 부위</dd>
+            <dt>항상성</dt><dd>몸이 외부 환경과 관계없이 일정한 상태를 유지하려는 성질</dd>
+            <dt>혈관 확장</dt><dd>피부 아래 혈관이 넓어져 열을 밖으로 내보내는 반응</dd>
+            <dt>증발 냉각</dt><dd>땀이 마르면서 열을 함께 가져가 몸을 식히는 원리</dd>
+            <dt>일사병</dt><dd>땀을 많이 흘려 탈수·무기력감이 나타나는 상태</dd>
+            <dt>열사병</dt><dd>체온 조절이 무너져 체온이 위험하게 오르는 상태</dd>
+            <dt>전해질</dt><dd>나트륨, 칼륨 등 몸의 수분 균형에 필요한 물질</dd>
+          </dl>
+        </div>
+        <ol class="qlist">
+          <li>습도가 높으면 땀을 많이 흘려도 시원해지지 않는 이유는 무엇인가?</li>
+          <li>일사병과 열사병의 차이를 근거를 들어 설명해보자.</li>
+        </ol>
+        <a class="file-link" href="WEEKLY/Week02/02_Middle.md">→ 원본 md 보기</a>
+      </div>
+
+      <div class="doc" id="d2-parent">
+        <button class="pdf-btn" onclick="exportPdf('d2-parent')">🖨️ PDF로 저장 (선옥·지수)</button>
+        <h4>폭염 속 인체 반응과 가족의 건강 관리</h4>
+        <p>지난주에는 폭염과 열섬 현상이 왜 심해지는지를 다뤘다. 이번 주는 "그 더위 속에서
+        우리 몸은 어떻게 반응하는가"로 관점을 옮겨본다. 두 주제를 이어보면, 외부
+        환경(기후·도시 구조)과 개인의 신체 반응이 서로 맞물려 있다는 것을 자연스럽게
+        이해할 수 있다.</p>
+        <p>인체는 시상하부를 통해 체온을 일정하게 유지하는 항상성 시스템을 갖고 있다.
+        기온이 오르면 피부 혈관이 확장되어 열을 밖으로 내보내고, 땀샘에서 분비된 땀이
+        증발하며 열을 빼앗아간다. 이 조절 능력은 연령과 건강 상태에 따라 차이가 크다.
+        어린이는 체표면적 대비 체중이 작아 체온 변화가 빠르고, 스스로 갈증을 느끼고
+        표현하는 능력이 아직 충분히 발달하지 않을 수 있다. 노인은 땀샘 기능과 갈증 감지
+        능력이 나이가 들면서 저하되는 경향이 있어, 본인이 위험을 느끼기 전에 탈수나 체온
+        상승이 진행될 수 있다. 이런 이유로 폭염 대응 정책에서 어린이와 노인을 취약계층으로
+        우선 언급하는 경우가 많다.</p>
+        <p>증상의 단계도 구분해서 알아두면 실제 상황에서 도움이 된다. 땀을 많이 흘리고
+        무기력해지는 정도는 비교적 초기 단계(일사병)로, 그늘로 옮기고 수분·전해질을
+        보충하면 대개 회복된다. 반면 의식이 흐려지거나 피부가 뜨겁고 건조해지며 체온이
+        위험하게 올라가는 경우(열사병)는 응급 상황으로, 즉시 체온을 낮추고 의료 도움을
+        요청해야 한다. 두 상태를 구분하지 못하고 "그냥 더워서 그런가 보다" 하고 넘기는
+        것이 실제 사고로 이어지는 경우가 있어, 가정에서도 이 구분을 미리 알아두는 것이
+        좋다.</p>
+        <p>수분 보충에 대해서는 물만으로 충분한지에 대한 논의도 있다. 땀에는 나트륨 등
+        전해질도 포함되어 있어, 장시간 땀을 많이 흘렸다면 물과 더불어 적절한 전해질
+        섭취(이온음료, 약간의 소금 등)를 함께 고려하는 것이 권장된다. 다만 평소 활동에서는
+        물만으로도 충분한 경우가 많으므로, 활동량과 땀의 양에 맞춰 판단하는 것이 합리적이다.
+        아이가 야외 스포츠 활동을 하는 경우라면 운동 전후로 물을 나눠 마시게 하고, 갈증을
+        느끼기 전에 미리 마시도록 습관을 만들어주는 것이 효과적이다.</p>
+        <p>이런 배경 때문에 정부와 지방자치단체는 폭염 시기마다 수분 섭취, 활동 시간 조절,
+        취약계층 확인 등을 담은 공공 건강 행동 지침을 반복적으로 안내한다. 가정에서 이런
+        안내를 매번 새롭게 받아들이기보다, "우리 가족만의 폭염 대응 습관"으로 정리해두면
+        매년 여름 반복해서 활용할 수 있다.</p>
+        <p>냉방기기 사용에 대해서도 균형 잡힌 시각이 필요하다. 에어컨은 체온을 빠르게 낮추는
+        가장 확실한 방법이지만, 실내외 온도 차이가 너무 크면 오히려 몸의 체온 조절 기능에
+        혼란을 줄 수 있다는 지적도 있다. 반면 선풍기만으로는 기온이 매우 높은 날 충분한
+        냉각 효과를 내기 어려운 경우도 있다. 결국 실내 온도를 지나치게 낮추지 않으면서,
+        환기와 냉방을 함께 활용하는 방식이 여러 건강 정보에서 권장되는 절충안이다.</p>
+        <h3>자녀와의 대화를 위한 질문 힌트</h3>
+        <ol class="qlist">
+          <li>"우리 몸이 더울 때 스스로 어떻게 열을 내보내는지 알아?"라고 물어 아이가 지난주
+          배운 '열섬'과 이번 주의 '땀·체온 조절'을 스스로 연결해보게 한다.</li>
+          <li>일사병과 열사병의 차이를 아이에게 설명해보라고 하고, 부모가 빠진 부분을
+          보완해주면 실생활 안전 교육으로도 이어진다.</li>
+          <li>"할머니, 할아버지는 우리보다 땀을 잘 못 흘리실 수도 있대. 왜 그럴까?"처럼
+          가족 내 다른 세대의 신체 반응 차이로 대화를 넓혀볼 수 있다.</li>
+        </ol>
+        <p class="note">증상 판단이나 응급조치가 필요한 상황에서는 이 글이 아니라 의료기관·
+        질병관리청 등 공식 안내를 따르세요.</p>
+        <a class="file-link" href="WEEKLY/Week02/03_Parents.md">→ 원본 md 보기</a>
+      </div>
+
+      <div class="doc" id="d2-disc">
+        <h4>가족 토론 — 땀과 체온 조절</h4>
+        <ol class="qlist">
+          <li><b>(원인)</b> 더운 날 땀이 나는 것은 우리 몸에 어떤 도움이 될까?</li>
+          <li><b>(근거)</b> 습도가 높은 날은 땀을 많이 흘려도 왜 시원해지지 않을까?</li>
+          <li><b>(다른 관점)</b> 일사병과 열사병은 어떻게 다를까? 왜 이 둘을 구분해야 할까?</li>
+          <li><b>(지난 주와 연결)</b> 지난주에 배운 '열섬 현상'과 이번 주 배운 '체온 조절'은
+          어떻게 연결될까?</li>
+          <li><b>(찬반 토론)</b> "더운 날에는 아이들의 야외 운동회·체육 수업을 무조건
+          취소해야 한다" — 찬성 vs 반대?</li>
+        </ol>
+        <h3>부모가 참고할 좋은 후속 질문</h3>
+        <ul class="qlist">
+          <li>"만약 땀이 나지 않는다면 우리 몸에 어떤 일이 생길까?"</li>
+          <li>"우리 가족 중 누가 더위에 더 취약할까? 왜 그럴까?"</li>
+        </ul>
+        <a class="file-link" href="WEEKLY/Week02/04_Family_Discussion.md">→ 원본 md 보기</a>
+      </div>
+    </div>
+    </div><!-- /wk2 -->
+  </section>
+
+  <!-- SOURCES -->
+  <section class="panel" id="sources">
+    <div class="card">
+      <p class="muted" style="margin-top:0">아래 링크는 웹 검색으로 실제 도메인 접속 가능 여부를 확인한
+      공식 홈페이지/랜딩 페이지입니다. 지문 제작 시 이 사이트들의 내용을 참고해 재구성하며, 원문을
+      그대로 옮기지 않습니다.</p>
+      <table id="source-table"></table>
+      <p class="source-note">
+        ⓘ BBC History 링크는 BBC의 역사 다큐멘터리 허브로 연결됩니다. 과거 "BBC History Magazine"이었던
+        HistoryExtra는 2026년 1월부로 BBC와의 제휴가 종료되어 더 이상 BBC 소속 매체가 아니므로 별도
+        표기하지 않았습니다.<br>
+        ⓘ KBS는 별도의 다큐멘터리 전용 페이지가 확인되지 않아 메인 홈페이지로 연결합니다. 다큐인사이트,
+        역사스페셜 등은 홈페이지 내 검색 또는 공식 유튜브 채널에서 찾아보는 것을 권장합니다.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<div id="print-area"></div>
+
+<footer>Family Learning OS · Dashboard v1 · 2026-07-18</footer>
+
+<script>
+const CURRICULUM = [
+  {name:"과학", weeks:"Week 01,02,10,18,26,34,42,50", totalWeeks:8, completedWeeks:2, file:"CURRICULUM/Science.md",
+   topics:["우주","생명","환경","에너지","인체"],
+   sources:[["EBS","https://www.ebs.co.kr/"],["국립중앙과학관","https://www.science.go.kr/"],
+            ["NASA","https://www.nasa.gov/"],["사이언스타임즈","https://www.sciencetimes.co.kr/main"]]},
+  {name:"한국사", weeks:"Week 03,11,19,27,35,43,51", totalWeeks:7, completedWeeks:0, file:"CURRICULUM/Korean-History.md",
+   topics:["선사시대~현대사","'왜 일어났는가' 중심","세계사와 연결"],
+   sources:[["우리역사넷","https://contents.history.go.kr/front"],["국가기록원","https://www.archives.go.kr/"],
+            ["EBS","https://www.ebs.co.kr/"]]},
+  {name:"세계사", weeks:"Week 04,12,20,28,36,44,52", totalWeeks:7, completedWeeks:0, file:"CURRICULUM/World-History.md",
+   topics:["문명","산업혁명","세계대전","냉전"],
+   sources:[["EBS","https://www.ebs.co.kr/"],["BBC History","https://www.bbc.co.uk/history"],
+            ["Britannica","https://www.britannica.com/"]]},
+  {name:"경제", weeks:"Week 05,13,21,29,37,45", totalWeeks:6, completedWeeks:0, file:"CURRICULUM/Economics.md",
+   topics:["돈","물가","금리","기업","시장"],
+   sources:[["한국은행","https://www.bok.or.kr/"],["KOSIS","https://kosis.kr/"],
+            ["OECD","https://www.oecd.org/en.html"]]},
+  {name:"기술", weeks:"Week 06,14,22,30,38,46", totalWeeks:6, completedWeeks:0, file:"CURRICULUM/Technology.md",
+   topics:["AI","반도체","인터넷","로봇","바이오"],
+   sources:[["EBS","https://www.ebs.co.kr/"],["사이언스타임즈","https://www.sciencetimes.co.kr/main"],
+            ["MIT News","https://news.mit.edu/"]]},
+  {name:"의학", weeks:"Week 07,15,23,31,39,47", totalWeeks:6, completedWeeks:0, file:"CURRICULUM/Medicine.md",
+   topics:["인체와 건강","질병과 예방","백신·공공보건","의학 연구와 AI"],
+   sources:[["NIH","https://www.nih.gov/"],["WHO","https://www.who.int/"],
+            ["PubMed (논문 검색)","https://pubmed.ncbi.nlm.nih.gov/"]]},
+  {name:"사회", weeks:"Week 08,16,24,32,40,48", totalWeeks:6, completedWeeks:0, file:"CURRICULUM/Society.md",
+   topics:["민주주의","문화","인구·저출산·고령화","복지·불평등"],
+   sources:[["KBS","https://www.kbs.co.kr/"],["OECD","https://www.oecd.org/en.html"],
+            ["통계청","https://www.kostat.go.kr/"]]},
+  {name:"철학·심리", weeks:"Week 09,17,25,33,41,49", totalWeeks:6, completedWeeks:0, file:"CURRICULUM/Philosophy.md",
+   topics:["행복","윤리","심리","철학적 질문"],
+   sources:[["EBS 위대한 수업","https://home.ebs.co.kr/greatminds/index"],
+            ["Stanford Encyclopedia of Philosophy","https://plato.stanford.edu/"]]},
+];
+
+const grid = document.getElementById('curriculum-grid');
+CURRICULUM.forEach(s=>{
+  const chips = s.sources.map(([n,u])=>`<a class="chip" href="${u}" target="_blank" rel="noopener">${n} ↗</a>`).join('');
+  grid.insertAdjacentHTML('beforeend', `
+    <div class="card">
+      <h3 style="margin-top:0">${s.name} <span class="muted" style="font-weight:400;font-size:12.5px">· ${s.weeks}</span></h3>
+      <ul class="topic-list">${s.topics.map(t=>`<li>${t}</li>`).join('')}</ul>
+      <div class="chips">${chips}</div>
+      <div style="margin-top:10px"><a class="file-link" href="${s.file}">→ ${s.file}</a></div>
+    </div>`);
+});
+
+const srcTable = document.getElementById('source-table');
+let rows = '<tr><th>분야</th><th>소스</th><th>링크</th></tr>';
+CURRICULUM.forEach(s=>{
+  s.sources.forEach(([n,u],i)=>{
+    rows += `<tr><td>${i===0?s.name:''}</td><td>${n}</td><td><a class="ext" href="${u}" target="_blank" rel="noopener">${u}</a></td></tr>`;
+  });
+});
+srcTable.innerHTML = rows;
+
+const TOTAL_WEEKS = 52;
+const WEEKS = [
+  {id:"wk1", num:1, season:"과학", topic:"폭염과 기후 변화 (열섬 현상)",
+   checklistDone:3, checklistTotal:10, generated:"2026-07-18",
+   docs:[
+     {level:"초4", doc:"d-elem", file:"WEEKLY/Week01/01_Elementary.md"},
+     {level:"중3", doc:"d-mid", file:"WEEKLY/Week01/02_Middle.md"},
+     {level:"성인", doc:"d-parent", file:"WEEKLY/Week01/03_Parents.md"},
+     {level:"가족토론", doc:"d-disc", file:"WEEKLY/Week01/04_Family_Discussion.md"},
+   ]},
+  {id:"wk2", num:2, season:"과학", topic:"땀은 왜 날까? — 몸의 체온 조절 원리 (인체)",
+   checklistDone:3, checklistTotal:10, generated:"2026-07-18",
+   docs:[
+     {level:"초4", doc:"d2-elem", file:"WEEKLY/Week02/01_Elementary.md"},
+     {level:"중3", doc:"d2-mid", file:"WEEKLY/Week02/02_Middle.md"},
+     {level:"성인", doc:"d2-parent", file:"WEEKLY/Week02/03_Parents.md"},
+     {level:"가족토론", doc:"d2-disc", file:"WEEKLY/Week02/04_Family_Discussion.md"},
+   ]},
+];
+
+const completedWeeks = WEEKS.length;
+const totalDocs = WEEKS.reduce((n,w)=>n+w.docs.length,0);
+const kgLinks = 1; // KNOWLEDGE_GRAPH/knowledge-map.md 누적 연결 기록 행 수
+
+document.getElementById('stat-row').innerHTML = `
+  <div class="stat-card"><div class="num">${completedWeeks} / ${TOTAL_WEEKS}주</div><div class="label">전체 진행률 (${Math.round(completedWeeks/TOTAL_WEEKS*100)}%)</div></div>
+  <div class="stat-card"><div class="num">${totalDocs}개</div><div class="label">생성된 지문·토론 문서</div></div>
+  <div class="stat-card"><div class="num">과학</div><div class="label">현재 시즌 (배정 8주 중 ${completedWeeks}주 진행)</div></div>
+  <div class="stat-card"><div class="num">${kgLinks}건</div><div class="label">Knowledge Graph 연결</div></div>
+`;
+
+const seasonProgressEl = document.getElementById('season-progress');
+CURRICULUM.forEach(s=>{
+  const pct = Math.round((s.completedWeeks/s.totalWeeks)*100);
+  seasonProgressEl.insertAdjacentHTML('beforeend', `
+    <div class="season-row">
+      <div class="s-name">${s.name}</div>
+      <div class="s-bar"><div class="s-fill" style="width:${pct}%"></div></div>
+      <div class="s-frac">${s.completedWeeks}/${s.totalWeeks}주</div>
+    </div>`);
+});
+
+const weekProgressTable = document.getElementById('week-progress-table');
+let wpRows = '<tr><th>주차</th><th>주제</th><th>학습 사이클 (10단계)</th><th>상태</th></tr>';
+WEEKS.forEach(w=>{
+  wpRows += `<tr>
+    <td>Week ${String(w.num).padStart(2,'0')}</td>
+    <td>${w.topic}</td>
+    <td>${w.checklistDone}/${w.checklistTotal}단계</td>
+    <td><span class="status-pill ${w.checklistDone===w.checklistTotal?'status-done':'status-pending'}">${w.checklistDone===w.checklistTotal?'완료':'진행중'}</span></td>
+  </tr>`;
+});
+weekProgressTable.innerHTML = wpRows;
+
+function jumpToDoc(weekId, docId){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab==='weekly'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='weekly'));
+  document.querySelectorAll('.week-select-btn').forEach(b=>b.classList.toggle('active', b.dataset.week===weekId));
+  document.querySelectorAll('.week-block').forEach(w=>w.classList.toggle('active', w.id===weekId));
+  document.querySelectorAll('.doc-btn').forEach(b=>b.classList.toggle('active', b.dataset.doc===docId));
+  document.querySelectorAll('.doc').forEach(d=>d.classList.toggle('active', d.id===docId));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ---------- PDF EXPORT (via browser print) ----------
+const PDF_NAME_MAP = {"초4":"유아미", "중3":"유아인", "성인":"선옥·지수"};
+
+function exportPdf(docId){
+  const docEl = document.getElementById(docId);
+  if(!docEl) return;
+
+  let weekInfo=null, docInfo=null;
+  for(const w of WEEKS){
+    const found = w.docs.find(d=>d.doc===docId);
+    if(found){ weekInfo=w; docInfo=found; break; }
+  }
+  const levelLabel = docInfo ? docInfo.level : '';
+  const assignedName = PDF_NAME_MAP[levelLabel] || '';
+  const topic = weekInfo ? weekInfo.topic : '';
+  const dateStr = weekInfo ? weekInfo.generated : '';
+  const weekLabel = weekInfo ? `Week ${String(weekInfo.num).padStart(2,'0')}` : '';
+
+  const clone = docEl.cloneNode(true);
+  clone.querySelectorAll('.file-link, .pdf-btn').forEach(el=>el.remove());
+
+  const printArea = document.getElementById('print-area');
+  printArea.className = (levelLabel==='성인') ? 'level-adult' : '';
+  printArea.innerHTML = `
+    <div class="print-header">
+      <div class="print-brand">Family Learning</div>
+      <div class="print-sub">${weekLabel} · ${levelLabel}${assignedName?` (${assignedName})`:''}</div>
+    </div>
+    <div class="print-info">
+      <span><b>주제</b>${topic}</span>
+      <span><b>날짜</b>${dateStr}</span>
+    </div>
+    <div class="print-body">${clone.innerHTML}</div>
+  `;
+  window.print();
+}
+
+const readingListTable = document.getElementById('reading-list-table');
+let rlRows = '<tr><th>주차</th><th>수준</th><th>제목</th><th>상태</th><th></th></tr>';
+WEEKS.forEach(w=>{
+  w.docs.forEach((d,i)=>{
+    rlRows += `<tr class="clickable" onclick="jumpToDoc('${w.id}','${d.doc}')">
+      <td>${i===0?`Week ${String(w.num).padStart(2,'0')}`:''}</td>
+      <td>${d.level}</td>
+      <td>${i===0?w.topic:''}</td>
+      <td><span class="status-pill status-done">완료</span></td>
+      <td>보기 →</td>
+    </tr>`;
+  });
+});
+readingListTable.innerHTML = rlRows;
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+document.querySelectorAll('.week-select-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.week-select-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.week-block').forEach(w=>w.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.week).classList.add('active');
+  });
+});
+document.querySelectorAll('.doc-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.doc-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.doc').forEach(d=>d.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.doc).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
