@@ -308,6 +308,7 @@
     <div class="week-tabs" id="week-select">
       <button class="week-select-btn active" data-week="wk1">Week 01</button>
       <button class="week-select-btn" data-week="wk2">Week 02</button>
+      <button class="week-select-btn" data-week="wk3">Week 03</button>
     </div>
 
     <div class="week-block active" id="wk1">
@@ -642,6 +643,182 @@
       </div>
     </div>
     </div><!-- /wk2 -->
+
+    <div class="week-block" id="wk3">
+    <div class="card">
+      <h2>Week 03 <span class="badge">한국사 시즌</span></h2>
+      <p><b>주제:</b> 세종대왕은 왜 한글을 만들었을까?</p>
+      <p class="muted">선정 이유: GUIDE.md와 KNOWLEDGE_GRAPH에 예시로 언급되어 있던 "세종대왕 →
+      한글 → 집현전 → 과학기술 → 르네상스" 연결을 첫 한국사 주제로 실현. 이번 주부터 초등 지문은
+      초6 기준으로 생성.</p>
+    </div>
+
+    <div class="card">
+      <div class="week-tabs">
+        <button class="doc-btn active" data-doc="d3-elem">초6</button>
+        <button class="doc-btn" data-doc="d3-mid">중3</button>
+        <button class="doc-btn" data-doc="d3-parent">성인</button>
+        <button class="doc-btn" data-doc="d3-disc">가족 토론</button>
+      </div>
+
+      <div class="doc active" id="d3-elem">
+        <button class="pdf-btn" onclick="exportPdf('d3-elem')">🖨️ PDF로 저장 (유아미)</button>
+        <h4>세종대왕은 왜 한글을 만들었을까?</h4>
+        <p>조선 시대 사람들은 원래 한자를 사용해서 글을 읽고 썼어요. 그런데 한자는 배우기가 아주
+        어려웠어요. 글자 수가 수천 개나 되고, 글자마다 뜻과 소리를 따로따로 외워야 했기
+        때문이에요. 그래서 오랫동안 공부할 시간과 여유가 있는 귀족이나 관리들만 한자를 제대로
+        읽고 쓸 수 있었고, 대부분의 백성들은 글을 몰라 억울한 일을 당해도 제대로 하소연할
+        방법이 없었어요.</p>
+        <p>세종대왕은 이런 상황을 몹시 안타깝게 여겼어요. 백성이 글을 몰라서 법을 어기고도 그
+        이유를 모르거나, 억울하게 벌을 받는 일이 자주 있었기 때문이에요. 세종대왕은 "누구나
+        며칠만 배우면 쓸 수 있는 글자"를 만들기로 결심했어요.</p>
+        <p>세종대왕은 집현전이라는 기관에 있는 학자들과 함께 오랫동안 소리와 글자의 원리를
+        연구했어요. 사람이 말할 때 입술과 혀, 목구멍이 어떻게 움직이는지를 자세히 관찰해서, 그
+        모양을 본떠 자음을 만들었어요. 예를 들어 'ㄱ'은 혀뿌리가 목구멍을 막는 모양을, 'ㅁ'은
+        입술 모양을 본뜬 것이라고 해요. 모음은 하늘, 땅, 사람을 나타내는 점과 선을 조합해서
+        만들었어요. 이렇게 만들어진 글자가 바로 훈민정음, 오늘날의 한글이에요.</p>
+        <p>한글은 자음과 모음을 조합하는 방식이라서 기본 글자 몇 개만 알면 거의 모든 소리를
+        표현할 수 있어요. 그래서 한자보다 훨씬 배우기 쉬웠지요. 처음에는 한글을 반대하는
+        신하들도 있었지만, 시간이 지나면서 한글은 점점 더 많은 사람들이 쓰는 글자가 되었어요.</p>
+        <div class="wordbox">
+          <dl>
+            <dt>한자</dt><dd>중국에서 만들어져 뜻을 그림처럼 나타내는 글자</dd>
+            <dt>집현전</dt><dd>세종대왕 시기에 학자들이 모여 연구하던 기관</dd>
+            <dt>훈민정음</dt><dd>한글을 처음 만들었을 때 붙인 이름으로, "백성을 가르치는 바른 소리"라는 뜻</dd>
+            <dt>자음·모음</dt><dd>한글을 이루는 두 가지 글자 종류 (자음: ㄱㄴㄷ..., 모음: ㅏㅓㅗ...)</dd>
+          </dl>
+        </div>
+        <div class="think">💭 생각해보기: 만약 한글이 없었다면 오늘날 우리 생활은 어떻게 달라졌을까?</div>
+        <a class="file-link" href="WEEKLY/Week03/01_Elementary.md">→ 원본 md 보기</a>
+      </div>
+
+      <div class="doc" id="d3-mid">
+        <button class="pdf-btn" onclick="exportPdf('d3-mid')">🖨️ PDF로 저장 (유아인)</button>
+        <h4>세종대왕의 한글 창제 — 무엇이 그를 움직였을까</h4>
+        <p>조선 전기까지 한반도의 공식 문자는 한자였다. 한자는 중국에서 만들어진 표의문자로,
+        하나의 글자가 하나의 뜻을 담고 있어 익히는 데 오랜 시간이 필요했다. 글자 수만 수천 개에
+        달했고, 뜻과 음을 모두 외워야 했기 때문에 상당한 시간과 교육 기회가 있는 사람만 문자
+        생활이 가능했다. 그 결과 대다수 백성은 문맹 상태로 남아 있었고, 이는 법률이나 행정
+        정보를 제대로 전달받지 못하는 문제로 이어졌다.</p>
+        <p>세종대왕이 새로운 문자를 만들기로 한 배경에는 이런 현실적인 문제의식이 있었다.
+        훈민정음 서문에는 "우리말이 중국말과 달라 한자로는 뜻을 통하기 어려우니, 백성들이
+        쉽게 익혀 날마다 편히 쓰게 하고자 한다"는 취지가 담겨 있다. 즉 한글 창제는 학문적
+        실험이 아니라, 백성이 스스로 읽고 쓸 수 있어야 억울한 일을 줄일 수 있다는 실용적
+        목적에서 출발한 것이다.</p>
+        <p>한글의 제작 방식은 당시 문자 체계와 비교했을 때 상당히 독창적이었다. 집현전
+        학자들과 함께 세종대왕은 사람이 소리를 낼 때 발음 기관(입술, 혀, 목구멍)이 움직이는
+        모양을 본떠 자음을 만들고, 하늘·땅·사람을 상징하는 선과 점을 조합해 모음을 만들었다.
+        그 결과 소수의 기본 글자를 조합하는 것만으로 국어의 거의 모든 소리를 표기할 수 있는
+        표음문자가 탄생했다. 한자가 평생 익혀야 하는 문자였다면, 한글은 원리를 이해하면 며칠
+        안에 배울 수 있는 문자였다.</p>
+        <p>한글은 1443년에 만들어져 1446년 훈민정음이라는 이름으로 반포되었다. 반포 직후
+        곧바로 관청의 공식 문자로 자리 잡은 것은 아니었지만, 왕실 문서나 불교 경전 번역,
+        백성을 가르치기 위한 책 등에 조금씩 쓰이기 시작했다. 특히 한자를 배울 기회가 적었던
+        여성과 서민층 사이에서 먼저 활용도가 높아졌는데, 이는 한글이 신분과 성별에 따른 문자
+        격차를 줄이는 실질적인 도구로 기능했음을 보여준다. 이후 조선 후기에 이르러서는 소설,
+        편지, 실용서 등 다양한 갈래에서 한글 사용이 크게 늘어났다.</p>
+        <p>그러나 한글 창제 직후 모든 사람이 이를 반겼던 것은 아니다. 일부 신하들은 중국과
+        다른 문자를 따로 만드는 것이 사대의 예에 어긋난다며 반대했다. 이는 단순한 고집이
+        아니라, 한자를 중심으로 구축된 지식·행정 체계와 신분적 권위가 흔들릴 수 있다는 우려가
+        반영된 것이었다. 반면 세종대왕은 백성이 문자를 익혀 스스로 권리를 지킬 수 있어야
+        한다는 입장을 굽히지 않았다. 이 두 입장의 차이는 결국 '문자를 누구를 위해 만드는가'라는
+        질문으로 요약된다.</p>
+        <div class="wordbox">
+          <dl>
+            <dt>표의문자</dt><dd>하나의 글자가 하나의 뜻을 나타내는 문자(한자 등)</dd>
+            <dt>표음문자</dt><dd>소리를 기호로 나타내는 문자(한글 등)</dd>
+            <dt>문맹</dt><dd>글을 읽거나 쓸 줄 모르는 상태</dd>
+            <dt>훈민정음</dt><dd>한글의 처음 이름으로, "백성을 가르치는 바른 소리"라는 뜻</dd>
+            <dt>사대</dt><dd>큰 나라(중국)를 섬기고 따르는 태도</dd>
+            <dt>집현전</dt><dd>세종대왕이 학자들을 모아 연구하게 한 기관</dd>
+          </dl>
+        </div>
+        <ol class="qlist">
+          <li>세종대왕이 한글을 만든 근거로 이 글에서 제시된 것은 무엇인가?</li>
+          <li>한글 창제에 반대한 신하들의 논리를 근거를 들어 설명하고, 그 논리에 대해 자신의
+          생각을 말해보자.</li>
+        </ol>
+        <a class="file-link" href="WEEKLY/Week03/02_Middle.md">→ 원본 md 보기</a>
+      </div>
+
+      <div class="doc" id="d3-parent">
+        <button class="pdf-btn" onclick="exportPdf('d3-parent')">🖨️ PDF로 저장 (선옥·지수)</button>
+        <h4>한글 창제, 실용성과 권력 사이의 선택</h4>
+        <p>세종대왕의 한글 창제는 한국사에서 가장 널리 알려진 사건 중 하나이지만, 그 배경을
+        단순히 "똑똑한 왕이 편리한 글자를 만들었다"는 식으로만 이해하면 이 사건이 가진
+        정치적·사회적 함의를 놓치기 쉽다.</p>
+        <p>조선 전기의 공식 문자는 한자였고, 한자를 익히는 데는 상당한 시간과 경제적 여유가
+        필요했다. 그 결과 문자 생활은 사실상 양반과 관료 계층의 전유물이었으며, 이는 지식과
+        정보에 대한 접근권이 신분에 따라 갈리는 구조로 이어졌다. 백성들은 법과 제도의 내용을
+        스스로 확인할 방법이 없었고, 이는 통치 효율성과 백성의 억울함 모두에 문제를 일으켰다.
+        훈민정음 서문에 나타난 "백성을 위하여"라는 표현은 이런 현실 인식을 반영한 것으로 볼 수
+        있다.</p>
+        <p>다만 한글 창제를 온전히 '백성을 위한 선물'로만 해석하는 것도 지나치게 단순한
+        시각이다. 여러 역사학자들은 한글이 왕권 강화와 통치 효율성이라는 실용적 목적과도
+        맞물려 있었다고 본다. 백성이 문자를 익혀 왕의 교서나 법령을 직접 읽을 수 있다면, 이는
+        곧 왕의 뜻이 중간 관료의 해석을 거치지 않고 직접 전달될 수 있다는 뜻이기도 했다. 즉
+        한글은 애민 정신과 통치 전략이라는 두 가지 동기가 함께 작용한 결과로 이해하는 것이 더
+        균형 잡힌 해석이다.</p>
+        <p>한글 창제에 대한 당시 신하들의 반대도 주목할 만하다. 최만리 등 일부 집현전
+        학자들은 새로운 문자를 만드는 것이 중국(명)에 대한 사대의 예에 어긋나고, 학문 발전에
+        오히려 방해가 될 수 있다고 주장했다. 이 반대를 단순한 수구적 태도로만 볼 것이 아니라,
+        한자를 중심으로 구축된 지식 권력과 신분적 권위가 흔들릴 수 있다는 기득권층의 우려로
+        해석할 수도 있다. 실제로 한글이 조선 시대 내내 '정식 문자'로서 한자와 동등한 지위를
+        얻지는 못했고, 오랫동안 한자가 공식 문서의 문자로 남아 있었다는 점도 이런 해석을
+        뒷받침한다.</p>
+        <p>한글은 1443년 창제되어 1446년 훈민정음이라는 이름으로 반포되었다. 그러나 그
+        뒤로도 수백 년간 한글은 한자와 동등한 지위를 얻지 못했다. 공식 문서와 학문 언어는
+        여전히 한자였고, 한글은 여성과 서민층의 문자로 여겨지는 경우가 많았다. 한글이 국가의
+        공식 문자로 자리매김한 것은 19세기 말 갑오개혁 이후, 그리고 20세기 문해력 확산
+        운동을 거치면서였다. 즉 한글의 '완전한 성공'은 세종대왕 한 사람의 결정만으로 이뤄진
+        것이 아니라, 수백 년에 걸친 사회적 수용 과정의 결과였다고 볼 수 있다.</p>
+        <p>한글의 제자 원리 자체도 살펴볼 가치가 있다. 자음은 발음 기관의 모양을 본뜨고,
+        모음은 하늘·땅·사람을 상징하는 요소를 조합해 만들어졌다. 이는 감각적 관찰과 철학적
+        원리를 결합한 매우 체계적인 문자 설계로, 오늘날 언어학자들도 한글을 '가장 과학적인
+        문자 체계 중 하나'로 평가하는 이유가 된다.</p>
+        <p>흥미롭게도, 비슷한 시기 유럽에서는 구텐베르크의 활판 인쇄술이 확산되며 지식이 더
+        넓은 계층으로 퍼지는 변화가 일어나고 있었다. 문자 자체를 새로 만든 조선과, 기존
+        문자의 인쇄·확산 방식을 바꾼 유럽은 서로 다른 방식으로 '지식에 대한 접근성'이라는 같은
+        문제를 다루고 있었던 셈이다. 이 연결은 이후 세계사 시즌에서 다시 다뤄볼 만하다.</p>
+        <p>이 사건은 오늘날 우리가 이야기하는 '문해력'의 출발점과도 맞닿아 있다. 문해력을
+        단순히 글자를 읽는 능력이 아니라 정보를 이해하고 스스로 판단할 수 있는 힘이라고
+        본다면, 세종대왕이 한글을 통해 이루고자 했던 것도 결국 백성이 스스로 정보를 이해하고
+        판단할 수 있는 능력을 갖추게 하는 일이었다. 대상과 시대는 다르지만, '누구나 배울 수
+        있는 도구를 통해 스스로 생각하고 판단하게 한다'는 방향은 이 가족 학습 프로그램이
+        추구하는 목표와도 닮아 있다.</p>
+        <h3>자녀와의 대화를 위한 질문 힌트</h3>
+        <ol class="qlist">
+          <li>"만약 한글이 없었다면 우리는 어떤 글자를 쓰고 있을까?"라고 물어 아이가 문자의
+          필요성을 스스로 상상해보게 한다.</li>
+          <li>한글 창제에 반대한 신하들의 입장도 함께 소개해, "모두가 찬성한 일은 아니었다"는
+          역사적 복잡성을 아이가 이해하도록 돕는다.</li>
+          <li>"글을 읽고 쓸 수 있다는 것이 왜 중요한 힘이 될까?"라는 질문으로, 문해력과 권력의
+          관계를 자연스럽게 연결해볼 수 있다.</li>
+        </ol>
+        <a class="file-link" href="WEEKLY/Week03/03_Parents.md">→ 원본 md 보기</a>
+      </div>
+
+      <div class="doc" id="d3-disc">
+        <h4>가족 토론 — 세종대왕과 한글</h4>
+        <ol class="qlist">
+          <li><b>(원인)</b> 세종대왕은 왜 한글을 만들기로 결심했을까?</li>
+          <li><b>(근거)</b> 한글이 한자보다 배우기 쉬웠던 이유는 무엇일까?</li>
+          <li><b>(다른 관점)</b> 한글 창제에 반대한 신하들은 왜 반대했을까? 그들의 주장에도
+          일리가 있었을까?</li>
+          <li><b>(탐구 방법 연결)</b> 과학 시즌에서 우리는 "원인과 결과를 찾는" 방법을
+          연습했어. 이번 한국사 주제에서도 그 방법을 써볼 수 있을까?</li>
+          <li><b>(찬반 토론)</b> "그 시절에도 모든 공식 문서를 한자 대신 한글로 써야 했다" —
+          찬성 vs 반대?</li>
+        </ol>
+        <h3>부모가 참고할 좋은 후속 질문</h3>
+        <ul class="qlist">
+          <li>"그렇게 생각한 이유는 뭐야?"</li>
+          <li>"만약 네가 그 시대 신하였다면 찬성했을까, 반대했을까?"</li>
+        </ul>
+        <a class="file-link" href="WEEKLY/Week03/04_Family_Discussion.md">→ 원본 md 보기</a>
+      </div>
+    </div>
+    </div><!-- /wk3 -->
   </section>
 
   <!-- SOURCES -->
@@ -742,16 +919,28 @@ const WEEKS = [
      {level:"성인", doc:"d2-parent", file:"WEEKLY/Week02/03_Parents.md"},
      {level:"가족토론", doc:"d2-disc", file:"WEEKLY/Week02/04_Family_Discussion.md"},
    ]},
+  {id:"wk3", num:3, season:"한국사", topic:"세종대왕은 왜 한글을 만들었을까?",
+   checklistDone:3, checklistTotal:10, generated:"2026-07-23",
+   docs:[
+     {level:"초6", doc:"d3-elem", file:"WEEKLY/Week03/01_Elementary.md"},
+     {level:"중3", doc:"d3-mid", file:"WEEKLY/Week03/02_Middle.md"},
+     {level:"성인", doc:"d3-parent", file:"WEEKLY/Week03/03_Parents.md"},
+     {level:"가족토론", doc:"d3-disc", file:"WEEKLY/Week03/04_Family_Discussion.md"},
+   ]},
 ];
+
+CURRICULUM.forEach(s => { s.completedWeeks = WEEKS.filter(w => w.season === s.name).length; });
 
 const completedWeeks = WEEKS.length;
 const totalDocs = WEEKS.reduce((n,w)=>n+w.docs.length,0);
-const kgLinks = 1; // KNOWLEDGE_GRAPH/knowledge-map.md 누적 연결 기록 행 수
+const kgLinks = 2; // KNOWLEDGE_GRAPH/knowledge-map.md 누적 연결 기록 행 수
+const latestWeek = WEEKS[WEEKS.length-1];
+const currentSeasonInfo = CURRICULUM.find(s=>s.name===latestWeek.season);
 
 document.getElementById('stat-row').innerHTML = `
   <div class="stat-card"><div class="num">${completedWeeks} / ${TOTAL_WEEKS}주</div><div class="label">전체 진행률 (${Math.round(completedWeeks/TOTAL_WEEKS*100)}%)</div></div>
   <div class="stat-card"><div class="num">${totalDocs}개</div><div class="label">생성된 지문·토론 문서</div></div>
-  <div class="stat-card"><div class="num">과학</div><div class="label">현재 시즌 (배정 8주 중 ${completedWeeks}주 진행)</div></div>
+  <div class="stat-card"><div class="num">${latestWeek.season}</div><div class="label">현재 시즌 (배정 ${currentSeasonInfo.totalWeeks}주 중 ${currentSeasonInfo.completedWeeks}주 진행)</div></div>
   <div class="stat-card"><div class="num">${kgLinks}건</div><div class="label">Knowledge Graph 연결</div></div>
 `;
 
@@ -789,7 +978,7 @@ function jumpToDoc(weekId, docId){
 }
 
 // ---------- PDF EXPORT (via browser print) ----------
-const PDF_NAME_MAP = {"초4":"유아미", "중3":"유아인", "성인":"선옥·지수"};
+const PDF_NAME_MAP = {"초4":"유아미", "초6":"유아미", "중3":"유아인", "성인":"선옥·지수"};
 
 function exportPdf(docId){
   const docEl = document.getElementById(docId);
