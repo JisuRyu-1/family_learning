@@ -175,10 +175,13 @@
   #print-area{display:none;}
   @media print{
     @page{ size:A4 portrait; margin:15mm 20mm; }
-    body *{ visibility:hidden; }
-    #print-area, #print-area *{ visibility:visible; }
+    /* visibility:hidden만 쓰면 숨긴 요소도 레이아웃 높이를 그대로 차지해서,
+       현재 열려 있는 탭이 한 페이지보다 길면 그 뒤로 빈 페이지가 추가로 생긴다.
+       display:none으로 실제로 흐름에서 제거해야 인쇄 페이지 수가 print-area
+       내용만으로 정확히 결정된다. */
+    body > header, body > nav, body > main, body > footer{ display:none !important; }
     #print-area{
-      display:block; position:absolute; top:0; left:0; width:100%;
+      display:block; position:static; width:100%;
       padding:0; margin:0; background:#fff; color:#111;
     }
   }
