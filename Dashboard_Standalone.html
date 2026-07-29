@@ -226,41 +226,27 @@
     #print-area{
       display:block; position:absolute; top:0; left:0; width:100%;
       padding:0; margin:0; background:#fff; color:#111;
-      font-size:9.5px; line-height:1.4;
     }
   }
-  .print-header{ border-bottom:2px solid #2f6f4f; padding-bottom:6px; margin-bottom:8px; }
-  .print-brand{ font-size:15px; font-weight:800; color:#2f6f4f; letter-spacing:.02em; }
-  .print-sub{ font-size:9px; color:#555; margin-top:2px; }
-  .print-info{ display:flex; gap:16px; font-size:9px; margin-bottom:8px; color:#222; flex-wrap:wrap; }
-  .print-info b{ margin-right:3px; color:#2f6f4f; }
-  .print-body h4{ font-size:13px; margin:0 0 6px; color:#111; line-height:1.3; }
-  .print-body p{ font-size:9.5px; line-height:1.45; margin:5px 0; color:#111; }
-  .print-body .wordbox{ background:#f0f5f2; border-radius:6px; padding:6px 10px; margin:8px 0; }
-  .print-body .wordbox dl{ margin:0; display:grid; grid-template-columns:auto 1fr; column-gap:6px; row-gap:1px; }
-  .print-body .wordbox dt{ color:#111; font-size:9px; font-weight:700; }
-  .print-body .wordbox dd{ color:#444; margin:0; font-size:9px; }
-  .print-body .think{ border-left:2px solid #2f6f4f; padding:3px 10px; background:#f0f5f2; margin:8px 0; color:#222; font-size:9.5px;}
-  .print-body .note{ background:#fff6e5; color:#8a5a00; padding:4px 8px; border-radius:6px; font-size:8.5px; margin-top:6px; }
-  .print-body .qlist{ font-size:9.5px; color:#111; margin:5px 0; padding-left:14px; }
-  .print-body .qlist li{ margin-bottom:2px; }
-  .print-body h3{ font-size:10.5px; margin:8px 0 4px; color:#111; }
-
-  /* 성인용: 2페이지까지 자연스럽게 넘어가도 되므로 더 읽기 편한 크기로 */
-  #print-area.level-adult{ font-size:11px; line-height:1.6; }
-  #print-area.level-adult .print-brand{ font-size:17px; }
-  #print-area.level-adult .print-sub{ font-size:10px; }
-  #print-area.level-adult .print-info{ font-size:10px; margin-bottom:12px; }
-  #print-area.level-adult .print-body h4{ font-size:16px; margin:0 0 10px; }
-  #print-area.level-adult .print-body h3{ font-size:12px; margin:12px 0 6px; }
-  #print-area.level-adult .print-body p{ font-size:11px; line-height:1.65; margin:8px 0; }
-  #print-area.level-adult .print-body .wordbox{ padding:10px 14px; margin:12px 0; }
-  #print-area.level-adult .print-body .wordbox dt,
-  #print-area.level-adult .print-body .wordbox dd{ font-size:10.5px; }
-  #print-area.level-adult .print-body .think{ font-size:11px; padding:5px 12px; margin:12px 0; }
-  #print-area.level-adult .print-body .note{ font-size:9.5px; padding:6px 10px; }
-  #print-area.level-adult .print-body .qlist{ font-size:11px; margin:8px 0; padding-left:18px; }
-  #print-area.level-adult .print-body .qlist li{ margin-bottom:4px; }
+  /* 기본 글자 크기는 JS(exportPdf)가 내용 길이에 맞춰 동적으로 설정한다.
+     아래는 JS 실행 전 기본값이며, 나머지 요소는 모두 em 단위라 이 값에 맞춰 함께 커지고 작아진다. */
+  #print-area{ font-size:13px; line-height:1.5; }
+  .print-header{ border-bottom:0.15em solid #2f6f4f; padding-bottom:0.5em; margin-bottom:0.7em; }
+  .print-brand{ font-size:1.35em; font-weight:800; color:#2f6f4f; letter-spacing:.02em; }
+  .print-sub{ font-size:0.85em; color:#555; margin-top:0.2em; }
+  .print-info{ display:flex; gap:1.2em; font-size:0.85em; margin-bottom:0.7em; color:#222; flex-wrap:wrap; }
+  .print-info b{ margin-right:0.3em; color:#2f6f4f; }
+  .print-body h4{ font-size:1.35em; margin:0 0 0.5em; color:#111; line-height:1.3; }
+  .print-body p{ font-size:1em; line-height:1.5; margin:0.45em 0; color:#111; }
+  .print-body .wordbox{ background:#f0f5f2; border-radius:0.5em; padding:0.5em 0.8em; margin:0.7em 0; }
+  .print-body .wordbox dl{ margin:0; display:grid; grid-template-columns:auto 1fr; column-gap:0.5em; row-gap:0.15em; }
+  .print-body .wordbox dt{ color:#111; font-size:0.9em; font-weight:700; }
+  .print-body .wordbox dd{ color:#444; margin:0; font-size:0.9em; }
+  .print-body .think{ border-left:0.15em solid #2f6f4f; padding:0.3em 0.8em; background:#f0f5f2; margin:0.7em 0; color:#222; font-size:1em; }
+  .print-body .note{ background:#fff6e5; color:#8a5a00; padding:0.35em 0.7em; border-radius:0.5em; font-size:0.82em; margin-top:0.5em; }
+  .print-body .qlist{ font-size:1em; color:#111; margin:0.4em 0; padding-left:1.2em; }
+  .print-body .qlist li{ margin-bottom:0.2em; }
+  .print-body h3{ font-size:1.05em; margin:0.7em 0 0.35em; color:#111; }
 </style>
 </head>
 <body>
@@ -3179,7 +3165,6 @@ function exportPdf(docId){
   clone.querySelectorAll('.file-link, .pdf-btn').forEach(el=>el.remove());
 
   const printArea = document.getElementById('print-area');
-  printArea.className = (levelLabel==='성인') ? 'level-adult' : '';
   printArea.innerHTML = `
     <div class="print-header">
       <div class="print-brand">Family Learning</div>
@@ -3191,6 +3176,37 @@ function exportPdf(docId){
     </div>
     <div class="print-body">${clone.innerHTML}</div>
   `;
+
+  // A4, margin 15mm(위아래)/20mm(좌우) → 인쇄 가능 영역: 가로 170mm, 세로 267mm(1페이지)
+  const MM_TO_PX = 96 / 25.4;
+  const pageHeightPx = 267 * MM_TO_PX;
+  const maxPages = (levelLabel === '성인') ? 2 : 1; // 성인은 2페이지까지 자연스럽게 허용
+  const maxHeightPx = pageHeightPx * maxPages;
+
+  // 실제 인쇄 폭(170mm)으로 화면 밖에 렌더링해 높이를 측정한다.
+  printArea.style.display = 'block';
+  printArea.style.position = 'fixed';
+  printArea.style.left = '-99999px';
+  printArea.style.top = '0';
+  printArea.style.width = '170mm';
+  printArea.style.visibility = 'hidden';
+
+  const START_SIZE = 13, MIN_SIZE = 8.5, STEP = 0.5;
+  let size = START_SIZE;
+  printArea.style.fontSize = size + 'px';
+  while (size > MIN_SIZE && printArea.scrollHeight > maxHeightPx) {
+    size -= STEP;
+    printArea.style.fontSize = size + 'px';
+  }
+
+  // 측정용 인라인 스타일 정리 (font-size는 유지 — 실제 인쇄에 그대로 쓰임)
+  printArea.style.position = '';
+  printArea.style.left = '';
+  printArea.style.top = '';
+  printArea.style.visibility = '';
+  printArea.style.width = '';
+  printArea.style.display = '';
+
   window.print();
 }
 
