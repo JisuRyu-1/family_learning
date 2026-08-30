@@ -146,6 +146,16 @@
   }
   .stat-card .num{font-size:24px; font-weight:800; color:var(--accent);}
   .stat-card .label{font-size:12.5px; color:var(--muted); margin-top:2px;}
+  .stat-card.clickable{cursor:pointer; transition:border-color .15s;}
+  .stat-card.clickable:hover{border-color:var(--accent);}
+
+  .kg-row{padding:10px 0; border-bottom:1px solid var(--border);}
+  .kg-row:last-child{border-bottom:none;}
+  .kg-row .kg-head{display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;}
+  .kg-row .kg-week{font-size:13px; font-weight:700;}
+  .kg-flow{display:flex; flex-wrap:wrap; align-items:center; gap:6px;}
+  .kg-chip{background:var(--chip); color:var(--chip-text); font-size:12.5px; padding:4px 10px; border-radius:999px;}
+  .kg-arrow{color:var(--muted); font-size:13px;}
 
   .season-row{display:flex; align-items:center; gap:12px; padding:8px 0;}
   .season-row .s-name{width:76px; font-size:13px; font-weight:600; flex-shrink:0;}
@@ -282,6 +292,12 @@
       <a class="file-link" href="GUIDE.md">→ GUIDE.md (운영 가이드)</a>&nbsp;&nbsp;
       <a class="file-link" href="ROADMAP.md">→ ROADMAP.md (5년 로드맵)</a>&nbsp;&nbsp;
       <a class="file-link" href="KNOWLEDGE_GRAPH/knowledge-map.md">→ Knowledge Graph</a>
+    </div>
+    <div class="card" id="kg-links-card">
+      <h2>지식 연결 지도 <span class="badge">Knowledge Graph</span></h2>
+      <p class="muted" style="margin-top:0">매주 배운 내용이 이전 주제와 어떻게 이어지는지 누적한 기록.</p>
+      <div id="kg-links"></div>
+      <a class="file-link" href="KNOWLEDGE_GRAPH/knowledge-map.md">→ knowledge-map.md 원본 보기</a>
     </div>
   </section>
 
@@ -2199,7 +2215,26 @@ CURRICULUM.forEach(s => { s.completedWeeks = WEEKS.filter(w => w.season === s.na
 
 const completedWeeks = WEEKS.length;
 const totalDocs = WEEKS.reduce((n,w)=>n+w.docs.length,0);
-const kgLinks = 7; // KNOWLEDGE_GRAPH/knowledge-map.md 누적 연결 기록 행 수
+
+// KNOWLEDGE_GRAPH/knowledge-map.md의 "누적 연결 기록" 표와 동일하게 유지한다.
+const KG_LINKS = [
+  {week:"Week 01→02", season:"과학", chain:"폭염 → 열섬 현상 → 체온 조절 → 땀·전해질"},
+  {week:"Week 03→04", season:"한국사 → 세계사", chain:"세종대왕 → 한글 → 집현전 → 구텐베르크 활판 인쇄술 → 르네상스"},
+  {week:"Week 05", season:"경제", chain:"수요와 공급 → 물가(인플레이션) → 금리 → 통화정책·재정정책"},
+  {week:"Week 06", season:"기술", chain:"데이터 → 머신러닝(패턴 학습) → 딥러닝 → AI 신뢰성·문해력"},
+  {week:"Week 02→07", season:"과학 → 의학", chain:"체온 조절(땀) → 발열(면역 반응) → 선천/후천 면역 → 예방접종"},
+  {week:"Week 04→08", season:"세계사 → 사회", chain:"구텐베르크 인쇄술(지식 확산) → 세계화·미디어(문화 확산) → 혼종 문화"},
+  {week:"Week 08→09", season:"사회 → 철학·심리", chain:"문화마다 다른 가치 기준 → 행복의 기준(자기실현 vs 관계·조화)도 문화마다 다름"},
+];
+const kgLinks = KG_LINKS.length;
+
+const kgLinksEl = document.getElementById('kg-links');
+kgLinksEl.innerHTML = KG_LINKS.map(k => `
+  <div class="kg-row">
+    <div class="kg-head"><span class="kg-week">${k.week}</span><span class="badge">${k.season}</span></div>
+    <div class="kg-flow">${k.chain.split(' → ').map(step =>
+      `<span class="kg-chip">${step}</span>`).join('<span class="kg-arrow">→</span>')}</div>
+  </div>`).join('');
 const latestWeek = WEEKS[WEEKS.length-1];
 const currentSeasonInfo = CURRICULUM.find(s=>s.name===latestWeek.season);
 
@@ -2207,7 +2242,7 @@ document.getElementById('stat-row').innerHTML = `
   <div class="stat-card"><div class="num">${completedWeeks} / ${TOTAL_WEEKS}주</div><div class="label">전체 진행률 (${Math.round(completedWeeks/TOTAL_WEEKS*100)}%)</div></div>
   <div class="stat-card"><div class="num">${totalDocs}개</div><div class="label">생성된 지문·토론 문서</div></div>
   <div class="stat-card"><div class="num">${latestWeek.season}</div><div class="label">현재 시즌 (배정 ${currentSeasonInfo.totalWeeks}주 중 ${currentSeasonInfo.completedWeeks}주 진행)</div></div>
-  <div class="stat-card"><div class="num">${kgLinks}건</div><div class="label">Knowledge Graph 연결</div></div>
+  <div class="stat-card clickable" onclick="showKnowledgeGraph()"><div class="num">${kgLinks}건</div><div class="label">Knowledge Graph 연결</div></div>
 `;
 
 const seasonProgressEl = document.getElementById('season-progress');
@@ -2241,6 +2276,12 @@ function jumpToDoc(weekId, docId){
   document.querySelectorAll('.doc-btn').forEach(b=>b.classList.toggle('active', b.dataset.doc===docId));
   document.querySelectorAll('.doc').forEach(d=>d.classList.toggle('active', d.id===docId));
   window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function showKnowledgeGraph(){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab==='overview'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='overview'));
+  document.getElementById('kg-links-card').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 // ---------- PDF EXPORT (via browser print) ----------
