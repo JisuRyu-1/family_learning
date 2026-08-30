@@ -27,7 +27,7 @@ EBS 위대한 수업, Stanford Encyclopedia of Philosophy
 
 | 주차 | 주제 | 상태 |
 |---|---|---|
-| Week 09 | | 미정 |
+| Week 09 | 행복이란 무엇일까? | 완료 |
 | Week 17 | | 미정 |
 | ... | | |
 
