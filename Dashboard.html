@@ -2199,7 +2199,7 @@ CURRICULUM.forEach(s => { s.completedWeeks = WEEKS.filter(w => w.season === s.na
 
 const completedWeeks = WEEKS.length;
 const totalDocs = WEEKS.reduce((n,w)=>n+w.docs.length,0);
-const kgLinks = 2; // KNOWLEDGE_GRAPH/knowledge-map.md 누적 연결 기록 행 수
+const kgLinks = 7; // KNOWLEDGE_GRAPH/knowledge-map.md 누적 연결 기록 행 수
 const latestWeek = WEEKS[WEEKS.length-1];
 const currentSeasonInfo = CURRICULUM.find(s=>s.name===latestWeek.season);
 
